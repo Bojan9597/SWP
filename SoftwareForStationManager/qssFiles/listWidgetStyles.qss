@@ -1,0 +1,5 @@
+
+
+QListWidget#item {
+    border: none;
+}

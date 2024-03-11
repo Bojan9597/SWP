@@ -1,0 +1,7 @@
+
+
+
+/* Styles for the container */
+QFrame#Container.default {
+    background-color: #FF2A3947;
+}

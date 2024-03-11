@@ -1,0 +1,11 @@
+
+
+QLabel#Band.default {
+    background-color: #FF787878; 
+    font-size: 15px;
+    font-weight: bold;
+    border: 1px solid transparent;
+    padding: 5px;
+    border-radius: 4;
+    color: white;
+}

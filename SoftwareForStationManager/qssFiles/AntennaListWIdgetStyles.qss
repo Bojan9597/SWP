@@ -1,0 +1,55 @@
+/* Style for portLabel when TX is set */
+QLabel#PortLabel.TXset {
+    background-color: #D8BCAB;
+    font-size: 15px; 
+    font-weight: bold;
+    border-radius: 4px;
+    color: white;
+}
+
+/* Style for portLabel when TX is set and antenna selected*/
+QLabel#PortLabel.TXsetAndAntennaSelected {
+    background-color: #FF0000;
+    font-size: 15px; 
+    font-weight: bold;
+    border-radius: 4px;
+    color: white;
+}
+
+/* Style for portLabel when TX is not set */
+QLabel#PortLabel.TXnotSet {
+    background-color: transparent;
+    font-size: 15px; 
+    font-weight: bold;
+    border-radius: 4px;
+    color: white;
+}
+
+/* Style for antennaLabel when selected */
+QLabel#AntennaLabel.antennaASelected {
+    background-color: green;
+    font-size: 15px; 
+    font-weight: bold;
+    border-radius: 4px;
+    color: white;
+}
+
+/* Style for antennaLabel when selected */
+QLabel#AntennaLabel.antennaBSelected {
+    background-color: #FF0065B2;
+    font-size: 15px; 
+    font-weight: bold;
+    border-radius: 4px;
+    color: white;
+}
+
+/* Style for antennaLabel when not selected */
+QLabel#AntennaLabel.antennaNotSelected {
+    background-color: transparent;
+    font-size: 15px; 
+    font-weight: bold;
+    border-radius: 4px;
+    color: white;
+}
+
+/* Define more styles for other scenarios and labels as needed */

@@ -1,0 +1,25 @@
+
+
+
+
+
+/* Styles for QListWidgetItem */
+QListWidgetItem#Item.default {
+    background-color: #FF181717 ; 
+    font-size: 15px;
+    font-weight: bold;
+    border: 1px solid transparent;
+    padding: 5px;
+    border-radius: 4;
+    color: white;
+}
+
+QListWidgetItem#Item.green {
+    background-color: #27ae60;
+    font-size: 15px;
+    font-weight: bold;
+    border: 1px solid transparent;
+    padding: 5px;
+    border-radius: 4;
+    color: white;
+}
