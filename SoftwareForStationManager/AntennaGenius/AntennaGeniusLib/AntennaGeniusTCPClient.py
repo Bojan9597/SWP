@@ -36,7 +36,7 @@ class AntennaGeniusTCPClient(QObject):
         self.sequence_number = 1
         self.timer = QTimer()
         self.timer.timeout.connect(self.attempt_connection)
-        self.udp_listener = UdpListener()
+        self.udp_listener = UdpListener(self.serial_number)
         self.udp_listener.data_received.connect(self.on_udp_data_received)
         self.auth_sent = False  # Flag to track if authentication command has been sent
         self.socket.connected.connect(self.onConnected)
