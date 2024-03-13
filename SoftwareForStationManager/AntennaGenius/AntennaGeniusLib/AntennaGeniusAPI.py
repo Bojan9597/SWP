@@ -391,9 +391,11 @@ class AntennaGeniusAPI(QObject):
     @pyqtSlot(str)
     def onStatusResponseReceived(self, response):
         if "relay" in response:
+            start_time = time.time()
             self.visualRepresentationAntennaGenius.subRelayStruct = self.process_sub_relay(response)
             self.get_outputs_to_show()
             self.updateOutputsToShowSignal.emit()
+            print("Time to process sub_relay:", time.time() - start_time)
 
         if "port" in response:
             portGetStruct = self.process_sub_port(response)
