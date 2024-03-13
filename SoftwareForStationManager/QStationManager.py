@@ -1,10 +1,10 @@
-import spidev
-import gpiod
-import time
-import os
-import sys
-import fcntl
-import ctypes
+# import spidev
+# import gpiod
+# import time
+# import os
+# import sys
+# import fcntl
+# import ctypes
 from PyQt5.QtCore import QObject, pyqtSignal
 from AntennaGenius.QAntennaGenius.QAntennaGeniusWidget import QAntennaGeniusWidget
 from XMLParser.XMLClasses import XML_AntennaGenius
