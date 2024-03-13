@@ -45,7 +45,7 @@ class AntennaGeniusTCPClient(QObject):
             self.timer.start(5000)  # Start the timer with a 5-second interval
             self.attempt_connection()
         else:
-            self.udp_listener.start()
+            self.udp_listener.run()
 
         self.responseTime = time.time()
 

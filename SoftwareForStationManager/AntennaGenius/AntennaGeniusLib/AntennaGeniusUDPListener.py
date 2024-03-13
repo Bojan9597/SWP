@@ -16,16 +16,18 @@ class UdpListener(QThread):
 
     def run(self):
         self.udp_socket.bind(9007)
-        while True:
-            if self.udp_socket.hasPendingDatagrams():
-                datagram_size = self.udp_socket.pendingDatagramSize()
-                data, sender_host, sender_port = self.udp_socket.readDatagram(datagram_size)
-                ip_address = self.extract_ip_address(data)
-                if (self.serial_number + " ")AntennaGenius/AntennaGeniusLib/AntennaGeniusTCPClient.py in data.decode():
-                    if ip_address != None:
-                        self.data_received.emit(ip_address)
-                        break
-            sleep(2)
+        self.udp_socket.readyRead.connect(self.read_pending_datagrams)
+
+    def read_pending_datagrams(self):
+        while self.udp_socket.hasPendingDatagrams():
+            datagram_size = self.udp_socket.pendingDatagramSize()
+            data, sender_host, sender_port = self.udp_socket.readDatagram(datagram_size)
+            ip_address = self.extract_ip_address(data)
+            if (self.serial_number + " ") in data.decode():
+                if ip_address is not None:
+                    self.data_received.emit(ip_address)
+                    return
+
 
     def extract_ip_address(self, data_stream):
         data_stream = data_stream.decode()
