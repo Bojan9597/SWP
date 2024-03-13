@@ -8,22 +8,21 @@ import ctypes
 from PyQt5.QtCore import QObject, pyqtSignal
 from AntennaGenius.QAntennaGenius.QAntennaGeniusWidget import QAntennaGeniusWidget
 from XMLParser.XMLClasses import XML_AntennaGenius
-from UI_ControlBoardReader import UI_ControlBoardReader
+# from UI_ControlBoardReader import UI_ControlBoardReader
 from QSSFileHelper import QSSFileHelper
 from PyQt5.QtWidgets import QMainWindow, QFrame, QGridLayout
 from PyQt5.QtCore import pyqtSlot
 from XMLParser.XMLParser import *
 
 BUTTONNUMBER = 33
-XML_PATH = "xmlExample.xml"
 
 class QStationManager(QMainWindow):
-    def __init__(self, parent):
+    def __init__(self, parent, xml_base_classes=None):
         super().__init__(parent)
-        self.xml_base_classes = XMLParser(XML_PATH).station_manager_list
-        self.ui_ControlBoardReader = UI_ControlBoardReader()
-        self.ui_ControlBoardReader.controlBoardSignal.connect(self.handleButtonPress)
-        self.ui_ControlBoardReader.controlBoardReader()
+        self.xml_base_classes = xml_base_classes
+        # self.ui_ControlBoardReader = UI_ControlBoardReader()
+        # self.ui_ControlBoardReader.controlBoardSignal.connect(self.handleButtonPress)
+        # self.ui_ControlBoardReader.controlBoardReader()
         self.antenna_genius_widgets = []
 
         self.container = None
@@ -32,7 +31,7 @@ class QStationManager(QMainWindow):
 
         self.initialize_station_manager()
         self.update_grid_layout_based_on_xml_file()
-        self.ui_ControlBoardReader.hi()
+        # self.ui_ControlBoardReader.hi()
     
     # i need destructor
     def __del__(self):

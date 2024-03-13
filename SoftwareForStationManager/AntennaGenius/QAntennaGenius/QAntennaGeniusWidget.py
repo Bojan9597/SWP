@@ -24,7 +24,6 @@ class QAntennaGeniusWidget(QWidget):
         self.client_thread.updateOutputsToShowSignal.connect(self.updateOutputsToShow)
         self.client_thread.updateAntennasToShowSignal.connect(self.updateAntennasToShow)
         self.client_thread.updateBandsToShowSignal.connect(self.updateBandsToShow)
-        self.client_thread.client.attempt_connection()
         # self.client_thread.run()
 
     # define destructor

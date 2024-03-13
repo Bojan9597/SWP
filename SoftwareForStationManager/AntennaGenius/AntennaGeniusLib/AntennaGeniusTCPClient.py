@@ -3,6 +3,7 @@ from PyQt5.QtNetwork import QTcpSocket, QHostAddress, QAbstractSocket
 import re
 from collections import defaultdict
 import time
+from AntennaGenius.AntennaGeniusLib.AntennaGeniusUDPListener import UdpListener
 
 class AntennaGeniusTCPClient(QObject):
     # Define signals
@@ -33,14 +34,26 @@ class AntennaGeniusTCPClient(QObject):
         self.socket.disconnected.connect(self.disconnect)
         self.connected_status = False
         self.sequence_number = 1
-        self.auth_sent = False  # Flag to track if authentication command has been sent
-
         self.timer = QTimer()
         self.timer.timeout.connect(self.attempt_connection)
-        self.timer.start(5000)  # Start the timer with a 5-second interval
-
+        self.udp_listener = UdpListener()
+        self.udp_listener.data_received.connect(self.on_udp_data_received)
+        self.auth_sent = False  # Flag to track if authentication command has been sent
         self.socket.connected.connect(self.onConnected)
+
+        if self.ip_address != None:
+            self.timer.start(5000)  # Start the timer with a 5-second interval
+            self.attempt_connection()
+        else:
+            self.udp_listener.start()
+
         self.responseTime = time.time()
+
+    def on_udp_data_received(self, ip_address):
+        self.ip_address = ip_address
+        self.timer.start(5000)
+        self.attempt_connection()
+        
 
     def onConnected(self):
         self.timer.stop()
@@ -57,6 +70,7 @@ class AntennaGeniusTCPClient(QObject):
 
         try:
             self.socket.connectToHost(QHostAddress(self.ip_address), int(self.port))
+
         except Exception as e:
             self.errorOccurred.emit(str(e))
             print(f"Error occurred: {e}")
