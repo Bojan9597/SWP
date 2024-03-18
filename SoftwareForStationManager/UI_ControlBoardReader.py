@@ -160,8 +160,8 @@ class UI_ControlBoardReader(QObject):
             GPIO.add_event_detect(17, GPIO.RISING, callback=self.handle_interrupt, bouncetime=1)
 
             # Keep the program running
-            while True:
-                time.sleep(1)
+            # while True:
+            #     time.sleep(1)
 
             os.close(self.spi_fd)
 
