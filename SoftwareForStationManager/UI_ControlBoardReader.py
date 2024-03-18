@@ -123,6 +123,7 @@ class UI_ControlBoardReader(QObject):
                 print("Button", i, "pressed")
                 if not self.buttonArray[i]:
                         self.buttonArray[i] = True
+                        self.controlBoardSignal.emit(i)
                 else:
                     print("Callback not set")
             else:
