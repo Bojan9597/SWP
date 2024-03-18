@@ -93,14 +93,16 @@ class UI_ControlBoardReader(QObject):
         time.sleep(0.01)
 
         # Transmit data over SPI
-        send_board_bytes = bytearray(self.control_board_size+2)
+        send_board_bytes = bytearray(self.control_board_size+1)
         self.spi.xfer(send_board_bytes)
 
         # Receive data over SPI and update receive_board
-        in_buffer = bytes(self.spi.readbytes(self.buffer_len))  # Convert to bytes-like object
+        in_buffer = bytes(self.spi.readbytes(self.buffer_len+1))  # Convert to bytes-like object
         writable_buffer = ctypes.create_string_buffer(in_buffer[2:])  # Make the buffer writable
         self.receive_board = ControlBoard.from_buffer(writable_buffer)
-
+        
+        for byte in ctypes.string_at(ctypes.addressof(self.receive_board), ctypes.sizeof(self.receive_board)):
+            print(f"{byte:4d}", end="")
         # Process received data as needed
         for i in range(PHYSICALBUTTONNUMBER):
             if self.receive_board.buttons[self.buttonMapping[i][0]] == self.buttonMapping[i][1]:
@@ -119,16 +121,12 @@ class UI_ControlBoardReader(QObject):
         for i in range(BUTTONNUMBER):
             if self.receive_board.buttons[self.buttonMapping[i][0]] == self.buttonMapping[i][1]:
                 print("Button", i, "pressed")
-                # if not self.buttonArray[i]:
-                #     if self.callback:
-                #         self.buttonArray[i] = True
-                #         self.callback(i)
-                #     else:
-                #         print("Callback not set")
+                if not self.buttonArray[i]:
+                        self.buttonArray[i] = True
+                else:
+                    print("Callback not set")
             else:
                 self.buttonArray[i] = False
-        for byte in ctypes.string_at(ctypes.addressof(self.receive_board), ctypes.sizeof(self.receive_board)):
-            print(f"{byte:4d}", end="")
         for i in range(ENCODERNUMBER):
             self.encoderArray[i] += self.receive_board.encoder_count[i]
 
