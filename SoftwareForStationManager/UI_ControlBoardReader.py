@@ -25,7 +25,7 @@ send_board = None
 
 # Define the ControlBoard structure using ctypes
 class ControlBoard(ctypes.Structure):
-    _pack_ =1
+    _pack_ = 1
     _fields_ = [
         ("LED_buffer", ctypes.c_uint8 * LED_DATA_SIZE),
         ("encoder_count", ctypes.c_int8 * ENCODERNUMBER),
@@ -90,18 +90,17 @@ class UI_ControlBoardReader(QObject):
 
         print("Interrupt occurred:", event)
         print("Counter:", self.counter)
-
-        # Initialize buffers for SPI communication
-        send_board_bytes = bytearray(self.control_board_size)
+        time.sleep(0.01)
 
         # Transmit data over SPI
+        send_board_bytes = bytearray(self.control_board_size+2)
         self.spi.xfer(send_board_bytes)
 
         # Receive data over SPI and update receive_board
         in_buffer = bytes(self.spi.readbytes(self.buffer_len))  # Convert to bytes-like object
         writable_buffer = ctypes.create_string_buffer(in_buffer[2:])  # Make the buffer writable
         self.receive_board = ControlBoard.from_buffer(writable_buffer)
-        
+
         # Process received data as needed
         for i in range(PHYSICALBUTTONNUMBER):
             if self.receive_board.buttons[self.buttonMapping[i][0]] == self.buttonMapping[i][1]:
@@ -117,22 +116,19 @@ class UI_ControlBoardReader(QObject):
         out_buffer = bytearray(self.send_board)
 
         # Additional processing similar to C++ code
-        for i in range(BUTTONNUMBER
-        
-        
-        ):
+        for i in range(BUTTONNUMBER):
             if self.receive_board.buttons[self.buttonMapping[i][0]] == self.buttonMapping[i][1]:
                 print("Button", i, "pressed")
-                
                 # if not self.buttonArray[i]:
-                    # if self.callback:
-                        # self.buttonArray[i] = True
-                        # self.callback(i)
-                    # else:
-                        # print("Callback not set")
+                #     if self.callback:
+                #         self.buttonArray[i] = True
+                #         self.callback(i)
+                #     else:
+                #         print("Callback not set")
             else:
                 self.buttonArray[i] = False
-
+        for byte in ctypes.string_at(ctypes.addressof(self.receive_board), ctypes.sizeof(self.receive_board)):
+            print(f"{byte:4d}", end="")
         for i in range(ENCODERNUMBER):
             self.encoderArray[i] += self.receive_board.encoder_count[i]
 
@@ -140,11 +136,7 @@ class UI_ControlBoardReader(QObject):
             self.send_board.LED_buffer[i * 3] = self.rgbArray[i].red
             self.send_board.LED_buffer[i * 3 + 1] = self.rgbArray[i].green
             self.send_board.LED_buffer[i * 3 + 2] = self.rgbArray[i].blue
-            
-        print("LED Buffer:", list(self.receive_board.LED_buffer))
-        print("Encoder Count:", list(self.receive_board.encoder_count))
-        print("Buttons:", list(self.receive_board.buttons))
-        print("Dummy:", self.receive_board.dummy)
+
 
         # Assuming you need to send the updated data over SPI again
         self.spi.xfer(out_buffer)  # Assuming `out_buffer` is a bytes-like object
@@ -167,13 +159,13 @@ class UI_ControlBoardReader(QObject):
             GPIO.setmode(GPIO.BCM)
             GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
             GPIO.add_event_detect(17, GPIO.RISING, callback=self.handle_interrupt, bouncetime=1)
-            
+
             # Keep the program running
             while True:
                 time.sleep(1)
 
             os.close(self.spi_fd)
-        
+
         except Exception as e:
             print("An error occurred:", e)
 
@@ -188,7 +180,7 @@ class UI_ControlBoardReader(QObject):
 # Define main function
 def main():
     app = QApplication(sys.argv)
-    
+
     # Create an instance of UI_ControlBoardReader
     control_board_reader = UI_ControlBoardReader()
 
