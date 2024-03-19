@@ -72,13 +72,12 @@ class QStationManager(QMainWindow):
 
     @pyqtSlot(int)
     def handleButtonPress(self, buttonID):
-        if 0 <= buttonID < len(self.buttonEventHandlers):
-            buttonEventHandler = self.buttonEventHandlers[buttonID]
-            print("Button", buttonID, "pressed")
-            print("Command:", buttonEventHandler.command)
-            print("Callback executed")
-            if buttonEventHandler.qwSender is not None:
-                buttonEventHandler.qwSender.client_thread.client.send_command(buttonEventHandler.command)
+        buttonEventHandler = self.buttonEventHandlers[buttonID]
+        print("Button", buttonID, "pressed")
+        print("Command:", self.buttonEventHandlers[buttonID].command)
+        print("Callback executed")
+        if buttonEventHandler.qwSender is not None:
+            buttonEventHandler.qwSender.client_thread.client.send_command(buttonEventHandler.command)
 
 class ButtonEventHandler:
     def __init__(self):
