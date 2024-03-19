@@ -20,10 +20,8 @@ ENCODERNUMBER = 12
 PHYSICALBUTTONNUMBER = 24
 POLLING_TIME_MS = 100
 
-# Define global variable for sending board data
 send_board = None
 
-# Define the ControlBoard structure using ctypes
 class ControlBoard(ctypes.Structure):
     _pack_ = 1
     _fields_ = [
@@ -33,7 +31,6 @@ class ControlBoard(ctypes.Structure):
         ("dummy", ctypes.c_uint8)
     ]
 
-# Define the UI_ControlBoardReader class
 class UI_ControlBoardReader(QObject):
     buttonPressed = pyqtSignal(int)
     controlBoardSignal = pyqtSignal(int)
@@ -42,7 +39,6 @@ class UI_ControlBoardReader(QObject):
         super().__init__()
         self.counter = 0
 
-        # Initialize SPI communication
         try:
             self.spi = spidev.SpiDev()
             self.spi.open(0, 1)
@@ -52,16 +48,13 @@ class UI_ControlBoardReader(QObject):
         except FileNotFoundError:
             print("Error: SPI device not found")
 
-        # Initialize send_board and receive_board as instances of ControlBoard
         self.send_board = ControlBoard()
         self.receive_board = ControlBoard()
 
-        # Initialize arrays for RGB values, button states, and encoder counts
         self.rgbArray = [self.LED_pixel() for _ in range(LEDARRAYSIZE)]
         self.buttonArray = [False] * BUTTONNUMBER
         self.encoderArray = [0] * ENCODERNUMBER
 
-        # Define button mapping
         self.buttonMapping = [
             (3, 32), (3, 16), (3, 8), (3, 4), (3, 2), (3, 1),
             (2, 32), (2, 16), (2, 8), (2, 4), (2, 2), (2, 1),
@@ -87,37 +80,21 @@ class UI_ControlBoardReader(QObject):
     def handle_interrupt(self, event):
         self.counter += 1
         global send_board
-
-        print("Interrupt occurred:", event)
-        print("Counter:", self.counter)
-        time.sleep(0.01)
+        # print("Interrupt occurred:", event)
+        # print("Counter:", self.counter)
 
         # Transmit data over SPI
         send_board_bytes = bytearray(self.control_board_size+1)
         self.spi.xfer(send_board_bytes)
 
         # Receive data over SPI and update receive_board
-        in_buffer = bytes(self.spi.readbytes(self.buffer_len+1))  # Convert to bytes-like object
-        writable_buffer = ctypes.create_string_buffer(in_buffer[2:])  # Make the buffer writable
+        in_buffer = bytes(self.spi.readbytes(self.buffer_len+1)) 
+        writable_buffer = ctypes.create_string_buffer(in_buffer[2:])
         self.receive_board = ControlBoard.from_buffer(writable_buffer)
         
-        for byte in ctypes.string_at(ctypes.addressof(self.receive_board), ctypes.sizeof(self.receive_board)):
-            print(f"{byte:4d}", end="")
-        # Process received data as needed
-        for i in range(PHYSICALBUTTONNUMBER):
-            if self.receive_board.buttons[self.buttonMapping[i][0]] == self.buttonMapping[i][1]:
-                self.send_board.LED_buffer[i * 3] = 255
-                self.send_board.LED_buffer[i * 3 + 1] = 255
-                self.send_board.LED_buffer[i * 3 + 2] = 255
-            else:
-                self.send_board.LED_buffer[i * 3] = 0
-                self.send_board.LED_buffer[i * 3 + 1] = 0
-                self.send_board.LED_buffer[i * 3 + 2] = 0
-
-        # Update out_buffer with modified send_board
-        out_buffer = bytearray(self.send_board)
-
-        # Additional processing similar to C++ code
+        # for byte in ctypes.string_at(ctypes.addressof(self.receive_board), ctypes.sizeof(self.receive_board)):
+            # print(f"{byte:4d}", end="")
+        
         for i in range(BUTTONNUMBER):
             if self.receive_board.buttons[self.buttonMapping[i][0]] == self.buttonMapping[i][1]:
                 print("Button", i, "pressed")
@@ -128,6 +105,19 @@ class UI_ControlBoardReader(QObject):
                     print("Callback not set")
             else:
                 self.buttonArray[i] = False
+                
+        for i in range(PHYSICALBUTTONNUMBER):
+            if self.receive_board.buttons[self.buttonMapping[i][0]] == self.buttonMapping[i][1]:
+                self.send_board.LED_buffer[i * 3] = 255
+                self.send_board.LED_buffer[i * 3 + 1] = 255
+                self.send_board.LED_buffer[i * 3 + 2] = 255
+            else:
+                self.send_board.LED_buffer[i * 3] = 0
+                self.send_board.LED_buffer[i * 3 + 1] = 0
+                self.send_board.LED_buffer[i * 3 + 2] = 0
+
+        out_buffer = bytearray(self.send_board)
+
         for i in range(ENCODERNUMBER):
             self.encoderArray[i] += self.receive_board.encoder_count[i]
 
@@ -137,10 +127,8 @@ class UI_ControlBoardReader(QObject):
             self.send_board.LED_buffer[i * 3 + 2] = self.rgbArray[i].blue
 
 
-        # Assuming you need to send the updated data over SPI again
-        self.spi.xfer(out_buffer)  # Assuming `out_buffer` is a bytes-like object
-
-    # Define function for reading control board continuously
+        self.spi.xfer(out_buffer)
+    
     def controlBoardReader(self):
         try:
             self.spi_fd = os.open(SPI_DEVICE, os.O_RDWR)
@@ -159,39 +147,30 @@ class UI_ControlBoardReader(QObject):
             GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
             GPIO.add_event_detect(17, GPIO.RISING, callback=self.handle_interrupt, bouncetime=1)
 
-            # Keep the program running
-            # while True:
-            #     time.sleep(1)
-
             os.close(self.spi_fd)
 
         except Exception as e:
             print("An error occurred:", e)
 
-    # Destructor
     def __del__(self):
         pass
 
-    # Example function to emit signal
-    def hi(self):
-        self.controlBoardSignal.emit(2)
-
 # Define main function
-def main():
-    app = QApplication(sys.argv)
+# def main():
+    # app = QApplication(sys.argv)
 
-    # Create an instance of UI_ControlBoardReader
-    control_board_reader = UI_ControlBoardReader()
+    # # Create an instance of UI_ControlBoardReader
+    # control_board_reader = UI_ControlBoardReader()
 
-    # Set global send_board variable
-    global send_board
-    send_board = control_board_reader.send_board
+    # # Set global send_board variable
+    # global send_board
+    # send_board = control_board_reader.send_board
 
-    # Start reading control board
-    control_board_reader.controlBoardReader()
+    # # Start reading control board
+    # control_board_reader.controlBoardReader()
 
-    sys.exit(app.exec_())
+    # sys.exit(app.exec_())
 
-# Execute main function if the script is run directly
-if __name__ == "__main__":
-    main()
+# # Execute main function if the script is run directly
+# if __name__ == "__main__":
+    # main()

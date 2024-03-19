@@ -44,7 +44,7 @@ class QStationManager(QMainWindow):
         self.container.setStyleSheet(q_station_manager_container_properties)
         self.grid_layout = QGridLayout(self.container)
         self.setCentralWidget(self.container)
-        self.setFixedSize(800, 480)
+        # self.setFixedSize(800, 480)
 
     def update_grid_layout_based_on_xml_file(self):
         try:
