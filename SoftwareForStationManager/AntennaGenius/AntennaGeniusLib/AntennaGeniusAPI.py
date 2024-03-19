@@ -63,7 +63,6 @@ class AntennaGeniusAPI(QObject):
             self.client.send_command("ping")
 
     def get_antenna_list(self):
-        
         loop = QEventLoop()
         seq_number = self.client.send_command("antenna list")
         @pyqtSlot(int, list, int)
@@ -149,7 +148,7 @@ class AntennaGeniusAPI(QObject):
             try:
                 hotkey = hotkey
             except ValueError:
-                hotkey = 0  # Set a default value or handle the error as needed
+                hotkey = 0
             trx = int(info[7].split('=')[1])
             output = AG_OutputListElementStruct(outputNumber, in_use, group, name, state, hotkey, trx)
             outputs.append(output)
@@ -356,15 +355,12 @@ class AntennaGeniusAPI(QObject):
         self.sub_output()
 
     def process_sub_relay(self, response):
-        # Split the response string by whitespace
         parts = response.split()
 
-        # Extract values of tx, rx, and state
         tx_value = parts[1].split('=')[1]
         rx_value = parts[2].split('=')[1]
         state_value = parts[3].split('=')[1]
 
-        # Create an instance of AG_SubRelayStruct with extracted values
         sub_relay_struct = AG_SubRelayStruct(tx_value, rx_value, state_value)
         return sub_relay_struct
     
@@ -395,7 +391,6 @@ class AntennaGeniusAPI(QObject):
             self.visualRepresentationAntennaGenius.subRelayStruct = self.process_sub_relay(response)
             self.get_outputs_to_show()
             self.updateOutputsToShowSignal.emit()
-            print("Time to process sub_relay:", time.time() - start_time)
 
         if "port" in response:
             portGetStruct = self.process_sub_port(response)

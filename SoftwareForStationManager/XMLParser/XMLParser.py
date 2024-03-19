@@ -22,10 +22,8 @@ class XMLParser:
             positionX = antenna_genius_elem.get('positionX')
             positionY = antenna_genius_elem.get('positionY')
 
-            # Create an instance of XML_AntennaGenius
             antenna_genius = XML_AntennaGenius(ip, password, serial_number, port, positionX, positionY)
 
-            # Iterate over button elements
             for button_elem in antenna_genius_elem.findall('buttons/button'):
                 button_number = button_elem.get('buttonNumber')
                 button_command = button_elem.text.strip()  # Get the text content of the button element
