@@ -15,6 +15,12 @@ from PyQt5.QtCore import pyqtSlot
 from XMLParser.XMLParser import *
 from UI_ControlBoardReader import UI_ControlBoardReader
 
+class ButtonEventHandler:
+    def __init__(self):
+        self.buttonID = 999
+        self.command = ""
+        self.qwSender = None
+
 BUTTONNUMBER = 33
 
 class QStationManager(QMainWindow):
@@ -22,13 +28,13 @@ class QStationManager(QMainWindow):
         super().__init__(parent)
         self.xml_base_classes = xml_base_classes
         self.ui_ControlBoardReader = UI_ControlBoardReader()
-        self.ui_ControlBoardReader.controlBoardSignal.connect(self.handleButtonPress)
+        # self.ui_ControlBoardReader.controlBoardSignal.connect(self.handleButtonPress)
         self.ui_ControlBoardReader.controlBoardReader()
         self.antenna_genius_widgets = []
 
         self.container = None
         self.grid_layout = None
-        self.buttonEventHandlers = [ButtonEventHandler() for _ in range(BUTTONNUMBER)]
+        self.ui_ControlBoardReader.buttonEventHandlers = [ButtonEventHandler() for _ in range(BUTTONNUMBER)]
 
         self.initialize_station_manager()
         self.update_grid_layout_based_on_xml_file()
@@ -56,9 +62,9 @@ class QStationManager(QMainWindow):
                     for button_id, command in antenna_genius_data.buttons:
                         print("Button ID:", button_id, "Button command:", command)
                         button_id = int(button_id)
-                        self.buttonEventHandlers[button_id].buttonID = button_id
-                        self.buttonEventHandlers[button_id].command = command
-                        self.buttonEventHandlers[button_id].qwSender = q_antenna_genius_widget
+                        self.ui_ControlBoardReader[button_id].buttonID = button_id
+                        self.ui_ControlBoardReader[button_id].command = command
+                        self.ui_ControlBoardReader[button_id].qwSender = q_antenna_genius_widget
 
                     self.antenna_genius_widgets.append(q_antenna_genius_widget)
                     self.grid_layout.addWidget(q_antenna_genius_widget, antenna_genius_data.position[0], antenna_genius_data.position[1])
@@ -78,9 +84,3 @@ class QStationManager(QMainWindow):
         print("Callback executed")
         if buttonEventHandler.qwSender is not None:
             buttonEventHandler.qwSender.client_thread.client.send_command(buttonEventHandler.command)
-
-class ButtonEventHandler:
-    def __init__(self):
-        self.buttonID = 999
-        self.command = ""
-        self.qwSender = None

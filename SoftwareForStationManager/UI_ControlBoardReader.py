@@ -21,6 +21,11 @@ PHYSICALBUTTONNUMBER = 24
 POLLING_TIME_MS = 100
 
 send_board = None
+class ButtonEventHandler:
+    def __init__(self):
+        self.buttonID = 999
+        self.command = ""
+        self.qwSender = None
 
 class ControlBoard(ctypes.Structure):
     _pack_ = 1
@@ -38,6 +43,7 @@ class UI_ControlBoardReader(QObject):
     def __init__(self):
         super().__init__()
         self.counter = 0
+        self.buttonEventHandlers = [ButtonEventHandler() for _ in range(BUTTONNUMBER)]
 
         try:
             self.spi = spidev.SpiDev()
@@ -100,7 +106,8 @@ class UI_ControlBoardReader(QObject):
                 print("Button", i, "pressed")
                 if not self.buttonArray[i]:
                         self.buttonArray[i] = True
-                        self.controlBoardSignal.emit(i)
+                        # self.controlBoardSignal.emit(i)
+                        self.buttonEventHandlers[i].qwSender.client_thread.client.send_command(self.buttonEventHandlers[i].command)
                 else:
                     print("Callback not set")
             else:
