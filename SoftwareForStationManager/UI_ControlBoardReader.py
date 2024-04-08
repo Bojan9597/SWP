@@ -97,7 +97,7 @@ class UI_ControlBoardReader(QObject):
         
         for i in range(BUTTONNUMBER):
             if self.receive_board.buttons[self.buttonMapping[i][0]] == self.buttonMapping[i][1]:
-                print("Button", i, "pressed")
+                # print("Button", i, "pressed")
                 if not self.buttonArray[i]:
                         self.buttonArray[i] = True
                         self.controlBoardSignal.emit(i)

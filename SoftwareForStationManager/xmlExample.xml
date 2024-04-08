@@ -1,5 +1,5 @@
 <stationManager>
-    <antennaGenius ip="192.168.100.28" password="PASS"
+    <antennaGenius password="PASS"
         serialNumber="24-16-7D" positionX="0" positionY="0" port="9007">
         <buttons>
             <button buttonNumber="0">port set 1 auto=0 source=MANUAL band=0</button>
