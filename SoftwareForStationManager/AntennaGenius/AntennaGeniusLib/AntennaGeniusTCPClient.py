@@ -37,7 +37,9 @@ class AntennaGeniusTCPClient(QObject):
         self.timer = QTimer()
         self.timer.timeout.connect(self.attempt_connection)
         self.udp_listener = UdpListener(self.serial_number)
+
         self.udp_listener.data_received.connect(self.on_udp_data_received)
+        
         self.auth_sent = False  # Flag to track if authentication command has been sent
         self.socket.connected.connect(self.onConnected)
 
@@ -52,6 +54,7 @@ class AntennaGeniusTCPClient(QObject):
     def on_udp_data_received(self, ip_address):
         self.ip_address = ip_address
         self.timer.start(5000)
+        self.udp_listener.data_received.disconnect(self.on_udp_data_received)
         self.attempt_connection()
         
 
