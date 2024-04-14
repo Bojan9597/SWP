@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QThread, pyqtSignal
-from PyQt5.QtNetwork import QUdpSocket
+from PyQt5.QtNetwork import QUdpSocket, QAbstractSocket
 from PyQt5.QtWidgets import QApplication
 import sys
 import re
@@ -15,7 +15,7 @@ class UdpListener(QThread):
         self.udp_socket = QUdpSocket()
 
     def run(self):
-        self.udp_socket.bind(9007)
+        self.udp_socket.bind(9007, QAbstractSocket.ReuseAddressHint)
         self.udp_socket.readyRead.connect(self.read_pending_datagrams)
 
     def read_pending_datagrams(self):

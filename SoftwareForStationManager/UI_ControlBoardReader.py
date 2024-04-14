@@ -144,7 +144,7 @@ class UI_ControlBoardReader(QObject):
 
             # Set up GPIO interrupt for control board events
             GPIO.setmode(GPIO.BCM)
-            GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+            GPIO.setup(17, GPIO.IN)
             GPIO.add_event_detect(17, GPIO.RISING, callback=self.handle_interrupt, bouncetime=1)
 
             os.close(self.spi_fd)
