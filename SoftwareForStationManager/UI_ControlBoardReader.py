@@ -1,3 +1,4 @@
+
 import spidev
 import RPi.GPIO as GPIO
 import time
@@ -28,6 +29,7 @@ class ControlBoard(ctypes.Structure):
         ("LED_buffer", ctypes.c_uint8 * LED_DATA_SIZE),
         ("encoder_count", ctypes.c_int8 * ENCODERNUMBER),
         ("buttons", ctypes.c_uint8 * 6),
+        ("longPressButtons", ctypes.c_uint8 * 6),
         ("dummy", ctypes.c_uint8)
     ]
 
@@ -97,7 +99,10 @@ class UI_ControlBoardReader(QObject):
         
         for i in range(BUTTONNUMBER):
             if self.receive_board.buttons[self.buttonMapping[i][0]] == self.buttonMapping[i][1]:
-                # print("Button", i, "pressed")
+                if self.receive_board.longPressButtons[self.buttonMapping[i][0]] == self.buttonMapping[i][1]:
+                    print("Long press button: ", i)
+                else:
+                    print("Button press: ", i)
                 if not self.buttonArray[i]:
                         self.buttonArray[i] = True
                         self.controlBoardSignal.emit(i)
